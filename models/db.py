@@ -118,12 +118,10 @@ db.define_table('audio',
 		Field('path_to'))
 
 ## Genres of music 
-##XXX:Deprecated
 db.define_table('genre',
 		Field('genre_name'))
 
 ## Role of a user e.g. guitarist, drummer, bassist
-##XXX: Deprecated
 db.define_table('role',
 		Field('role_name'))
 

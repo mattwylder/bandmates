@@ -2,16 +2,29 @@
 <script src="https://w.soundcloud.com/player/api.js" type="text/javascript">
 </script>
 <html>
-    {{=A('Audition for this band', _href=URL('auditionform', args=listing.id))}}
     <h1>{{=listing.title}}</h1>
      <!-- change concert.recording_url -->
+    <p>
+    <b>Genres:</b>
     {{for genre in genres:}}
-	<p>{{=genre}}</p>
+	{{=genre.genre_name + ','}}
+	
     {{pass}}
-    {{if audio:}}
+    <p>
+    <b>Open roles:</b>
+    {{for role in roles:}}
+	{{=role.role_name + ','}}
+    {{pass}}
+    <p>
+    <b>Description: </b>{{=listing.body}}
+    <p>
+    <b>Song samples:</b><p>
+    {{for link in audio:}}
     <iframe id="sc-widget" 
-    src="https://w.soundcloud.com/player/?url=http://soundcloud.com/actuallygrimes/go-1"
-    width="100%" scrolling="no" frameborder="no"></iframe>
+    src="https://w.soundcloud.com/player/?url={{=link.path_to}}"
+    width="500" scrolling="no" frameborder="no"></iframe>
+    <p>
     {{pass}}
-    {{=listing.body}}
+    <p>
+    {{=A('Audition for this band', _href=URL('auditionform', args=listing.id))}}
 </html>

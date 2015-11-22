@@ -49,11 +49,15 @@ def listing():
     '''genres = db(db.listing_genre.listing_ndx == listing.id).select(
 	    db.genre.ALL,
 	    left=db.listing_genre.on(listing == db.listing_genre.listing_ndx))'''
-    genres=db(db.listing_genre.listing_ndx == listing.id).select()
-    roles = db().select(
-	    db.role.ALL,
-	    left=db.listing_role.on(db.listing.id == db.listing_role.listing_ndx))
-    audio = None 
+    genres=db((db.listing_genre.genre_ndx== db.genre.id) & 
+	     (db.listing_genre.listing_ndx == listing.id)).select(
+	    db.genre.genre_name)
+    roles = db((db.listing_role.role_ndx == db.role.id) &
+	       (db.listing_role.listing_ndx == listing.id)).select(
+	    db.role.role_name)
+    audio = db((db.listing_audio.audio_ndx== db.audio.id) &
+	       (db.listing_audio.listing_ndx == listing.id)).select(
+	    db.audio.path_to)
     return dict(listing=listing, genres=genres,roles=roles, audio=audio)
 
 @auth.requires_login()
@@ -73,16 +77,18 @@ def listingform():
 		Field('city','City', requires=IS_NOT_EMPTY()),
 		Field('desc','description', requires=IS_NOT_EMPTY()),
 		Field('roles','Roles needed (Separated by commas)'),
-		Field('genres','Genres (Separated by commas)'))
+		Field('genres','Genres (Separated by commas)'),
+		Field('audio', 'Soundcloud links(separated by commas)'))
     if form.process().accepted:    
         title = form.vars.title
 	city = form.vars.city
         desc = form.vars.desc
 	genres = form.vars.genres
         roles = form.vars.roles
+	audio = form.vars.audio
+
 	listing_ndx = db.listing.insert(title=title, city=city,body=desc,
-					created_by=auth.user.id)
-    
+					created_by=auth.user.id) 
 	for cur_genre in genres.split(','):
 	    genre_ndx = db(db.genre.genre_name==cur_genre).select(db.genre.id).first()
 	    if genre_ndx == None:
@@ -94,6 +100,12 @@ def listingform():
 	    if role_ndx == None:
 		role_ndx = db.role.insert(role_name=cur_role)
 	    db.listing_role.insert(listing_ndx=listing_ndx,role_ndx=role_ndx)
+
+	for cur_audio in audio.split(','):
+	    audio_ndx = db(db.audio.path_to == cur_audio).select(db.audio.id).first()
+	    if audio_ndx == None:
+		audio_ndx = db.audio.insert(path_to=cur_audio)
+	    db.listing_audio.insert(listing_ndx=listing_ndx,audio_ndx=audio_ndx)
     elif form.errors:
 	response.flash = 'errors' 
 
