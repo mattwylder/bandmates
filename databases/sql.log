@@ -1,0 +1,559 @@
+timestamp: 2015-11-11T18:59:56.690361
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512),
+    registration_id CHAR(512)
+);
+success!
+timestamp: 2015-11-11T18:59:56.717944
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2015-11-11T18:59:56.729675
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  
+);
+success!
+timestamp: 2015-11-11T18:59:56.747899
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  ,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2015-11-11T18:59:56.771990
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2015-11-11T18:59:56.791178
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    created_on TIMESTAMP,
+    service CHAR(512),
+    ticket CHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2015-11-11T18:59:56.810451
+CREATE TABLE listing(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title CHAR(512),
+    city CHAR(512),
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    date_created TIMESTAMP,
+    body TEXT
+);
+success!
+timestamp: 2015-11-11T18:59:56.829564
+CREATE TABLE audition(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    parent_ndx INTEGER REFERENCES listing (id) ON DELETE CASCADE  ,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    date_created TIMESTAMP,
+    body TEXT
+);
+success!
+timestamp: 2015-11-11T18:59:56.853410
+CREATE TABLE audio(
+    title CHAR(512),
+    created_by INTEGER PRIMARY KEY AUTOINCREMENT,
+    path_to CHAR(512)
+);
+success!
+timestamp: 2015-11-11T18:59:56.866579
+CREATE TABLE genre(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    genre_name CHAR(512)
+);
+success!
+timestamp: 2015-11-11T18:59:56.897711
+CREATE TABLE role(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role_name CHAR(512)
+);
+success!
+timestamp: 2015-11-11T18:59:56.916455
+CREATE TABLE listing_role(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    listing_ndx INTEGER REFERENCES listing (id) ON DELETE CASCADE  ,
+    role_ndx INTEGER REFERENCES role (id) ON DELETE CASCADE  
+);
+success!
+timestamp: 2015-11-11T18:59:56.935931
+CREATE TABLE listing_audio(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    listing_ndx INTEGER REFERENCES listing (id) ON DELETE CASCADE  ,
+    audio_ndx INTEGER REFERENCES audio (created_by) ON DELETE CASCADE  
+);
+success!
+timestamp: 2015-11-11T18:59:56.954625
+CREATE TABLE listing_genre(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    listing_ndx INTEGER REFERENCES listing (id) ON DELETE CASCADE  ,
+    genre_ndx INTEGER REFERENCES genre (id) ON DELETE CASCADE  
+);
+success!
+timestamp: 2015-11-11T18:59:56.966908
+CREATE TABLE user_genre(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_ndx INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    genre_ndx INTEGER REFERENCES genre (id) ON DELETE CASCADE  
+);
+success!
+timestamp: 2015-11-11T18:59:56.979426
+CREATE TABLE user_audio(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_ndx INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    audio_ndx INTEGER REFERENCES audio (created_by) ON DELETE CASCADE  
+);
+success!
+timestamp: 2015-11-11T18:59:57.016669
+CREATE TABLE audition_audio(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    audition_ndx INTEGER REFERENCES audition (id) ON DELETE CASCADE  ,
+    audio_ndx INTEGER REFERENCES audio (created_by) ON DELETE CASCADE  
+);
+success!
+timestamp: 2015-11-16T21:46:29.011272
+ALTER TABLE listing_role ADD role_name CHAR(512);
+success!
+timestamp: 2015-11-16T21:46:29.026839
+ALTER TABLE listing_genre ADD genre_name CHAR(512);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

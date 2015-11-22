@@ -1,0 +1,14 @@
+{{extend 'layout.html'}}
+<html>
+    <a href={{=URL('listingform')}}>Post a listing</a>
+    <ul>
+    {{for listing in listings:}}
+	{{user = db(db.auth_user.id== listing.created_by).select().first()}}
+	<li>
+	    <h2><a href={{=URL("listing", args=listing.id)}}>{{=listing.title}}</a></h2>
+	    <h4>{{=user.first_name + " " + user.last_name}} - {{=listing.city}}</h4>	
+	<p>{{=listing.body}}</p>
+	</li> 
+    {{pass}}
+    </ul>
+</html>
