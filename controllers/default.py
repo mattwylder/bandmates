@@ -16,9 +16,9 @@ def index():
     if you need a simple wiki simply replace the two lines below with:
     return auth.wiki()
     """
-    search = SQLFORM.factory(Field('query', 'Search:'))
-    listings = db(db.listing.id > 0).select();
-    return dict(search=search,listings=listings,user=user)
+    import string
+    listings = db(db.listing.city == string.capitalize(auth.user.city)).select()
+    return dict(listings=listings,user=auth.user)
 
 @auth.requires_login()
 def listing():
@@ -57,16 +57,18 @@ def audition():
 
 @auth.requires_login()
 def listingform():
+
+    import string
     form = SQLFORM.factory(
 		Field('title','title',requires=IS_NOT_EMPTY()),
-		Field('city','City', requires=IS_NOT_EMPTY()),
+		Field('city','City', default=string.capitalize(auth.user.city),requires=IS_NOT_EMPTY()),
 		Field('desc','description', requires=IS_NOT_EMPTY()),
 		Field('roles','Roles needed (Separated by commas)'),
 		Field('genres','Genres (Separated by commas)'),
 		Field('audio', 'Soundcloud links(separated by commas)'))
     if form.process().accepted:    
         title = form.vars.title
-	city = form.vars.city
+	city = string.capitalize(form.vars.city)
         desc = form.vars.desc
 	genres = form.vars.genres
         roles = form.vars.roles
@@ -100,9 +102,11 @@ def listingform():
 @auth.requires_login()
 def auditionform():
     parent_ndx = request.args(0,cast=int)
+    roles = db((db.role.id == db.listing_role.role_ndx) &	
+	    (db.listing_role.listing_ndx == parent_ndx)).select(db.role.role_name)
     form = SQLFORM.factory(
 		Field('desc','description', requires=IS_NOT_EMPTY()),
-		Field('roles','Roles needed (Separated by commas)'),
+		Field('roles','list:reference', requires=IS_IN_SET(roles, multiple=True)),
 		Field('genres','Genres (Separated by commas)'))
     if form.process().accepted:    
         desc = form.vars.desc

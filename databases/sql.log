@@ -1,4 +1,4 @@
-timestamp: 2015-11-22T18:59:46.236306
+timestamp: 2015-11-22T20:38:12.667930
 CREATE TABLE auth_user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name CHAR(128),
@@ -7,24 +7,25 @@ CREATE TABLE auth_user(
     password CHAR(512),
     registration_key CHAR(512),
     reset_password_key CHAR(512),
-    registration_id CHAR(512)
+    registration_id CHAR(512),
+    city CHAR(512)
 );
 success!
-timestamp: 2015-11-22T18:59:46.263320
+timestamp: 2015-11-22T20:38:12.689014
 CREATE TABLE auth_group(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     role CHAR(512),
     description TEXT
 );
 success!
-timestamp: 2015-11-22T18:59:46.277449
+timestamp: 2015-11-22T20:38:12.710001
 CREATE TABLE auth_membership(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2015-11-22T18:59:46.296476
+timestamp: 2015-11-22T20:38:12.742637
 CREATE TABLE auth_permission(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  ,
@@ -33,7 +34,7 @@ CREATE TABLE auth_permission(
     record_id INTEGER
 );
 success!
-timestamp: 2015-11-22T18:59:46.328678
+timestamp: 2015-11-22T20:38:12.763419
 CREATE TABLE auth_event(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     time_stamp TIMESTAMP,
@@ -43,7 +44,7 @@ CREATE TABLE auth_event(
     description TEXT
 );
 success!
-timestamp: 2015-11-22T18:59:46.355013
+timestamp: 2015-11-22T20:38:12.784212
 CREATE TABLE auth_cas(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
@@ -53,7 +54,7 @@ CREATE TABLE auth_cas(
     renew CHAR(1)
 );
 success!
-timestamp: 2015-11-22T18:59:46.374768
+timestamp: 2015-11-22T20:38:12.798274
 CREATE TABLE listing(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title CHAR(512),
@@ -63,7 +64,7 @@ CREATE TABLE listing(
     body TEXT
 );
 success!
-timestamp: 2015-11-22T18:59:46.394688
+timestamp: 2015-11-22T20:38:12.825870
 CREATE TABLE audition(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     parent_ndx INTEGER REFERENCES listing (id) ON DELETE CASCADE  ,
@@ -72,84 +73,86 @@ CREATE TABLE audition(
     body TEXT
 );
 success!
-timestamp: 2015-11-22T18:59:46.420653
+timestamp: 2015-11-22T20:38:12.845182
 CREATE TABLE audio(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title CHAR(512),
     path_to CHAR(512)
 );
 success!
-timestamp: 2015-11-22T18:59:46.439742
+timestamp: 2015-11-22T20:38:12.870632
 CREATE TABLE genre(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     genre_name CHAR(512)
 );
 success!
-timestamp: 2015-11-22T18:59:46.459410
+timestamp: 2015-11-22T20:38:12.889962
 CREATE TABLE role(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     role_name CHAR(512)
 );
 success!
-timestamp: 2015-11-22T18:59:46.491696
+timestamp: 2015-11-22T20:38:12.910375
 CREATE TABLE listing_role(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     listing_ndx INTEGER REFERENCES listing (id) ON DELETE CASCADE  ,
     role_ndx INTEGER REFERENCES role (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2015-11-22T18:59:46.517030
+timestamp: 2015-11-22T20:38:12.924770
 CREATE TABLE listing_audio(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     listing_ndx INTEGER REFERENCES listing (id) ON DELETE CASCADE  ,
     audio_ndx INTEGER REFERENCES audio (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2015-11-22T18:59:46.530796
+timestamp: 2015-11-22T20:38:12.944120
 CREATE TABLE listing_genre(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     listing_ndx INTEGER REFERENCES listing (id) ON DELETE CASCADE  ,
     genre_ndx INTEGER REFERENCES genre (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2015-11-22T18:59:46.544667
+timestamp: 2015-11-22T20:38:12.960047
 CREATE TABLE user_genre(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_ndx INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
     genre_ndx INTEGER REFERENCES genre (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2015-11-22T18:59:46.571016
+timestamp: 2015-11-22T20:38:12.980331
 CREATE TABLE user_audio(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_ndx INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
     audio_ndx INTEGER REFERENCES audio (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2015-11-22T18:59:46.604664
+timestamp: 2015-11-22T20:38:12.994932
 CREATE TABLE audition_audio(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     audition_ndx INTEGER REFERENCES audition (id) ON DELETE CASCADE  ,
     audio_ndx INTEGER REFERENCES audio (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2015-11-22T18:59:46.618815
+timestamp: 2015-11-22T20:38:13.019594
 CREATE TABLE audition_genre(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     audition_ndx INTEGER REFERENCES audition (id) ON DELETE CASCADE  ,
     genre_ndx INTEGER REFERENCES genre (id) ON DELETE CASCADE  
 );
 success!
-timestamp: 2015-11-22T18:59:46.644224
-CREATE TABLE city(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    city_name CHAR(512)
-);
-success!
-timestamp: 2015-11-22T19:27:44.174951
+timestamp: 2015-11-22T20:38:13.045029
 CREATE TABLE audition_role(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     audition_ndx INTEGER REFERENCES audition (id) ON DELETE CASCADE  ,
     role_ndx INTEGER REFERENCES role (id) ON DELETE CASCADE  
 );
+success!
+timestamp: 2015-11-22T20:38:13.063879
+CREATE TABLE city(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    city_name CHAR(512)
+);
+success!
+success!
 success!

@@ -57,8 +57,8 @@ auth = Auth(db)
 service = Service()
 plugins = PluginManager()
 
-#auth.settings.extra_fields['auth_user']=[
-#   Field('city_ndx', 'reference city')]
+auth.settings.extra_fields['auth_user']=[
+   Field('city')]
 
 ## create all tables needed by auth if not custom tables
 auth.define_tables(username=False, signature=False)
@@ -93,7 +93,6 @@ auth.settings.reset_password_requires_verification = True
 
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
-
 
 #Classified listing
 db.define_table('listing',
