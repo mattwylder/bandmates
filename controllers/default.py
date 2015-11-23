@@ -63,36 +63,41 @@ def listingform():
 		Field('title','title',requires=IS_NOT_EMPTY()),
 		Field('city','City', default=string.capitalize(auth.user.city),requires=IS_NOT_EMPTY()),
 		Field('desc','description', requires=IS_NOT_EMPTY()),
-		Field('roles','Roles needed (Separated by commas)'),
-		Field('genres','Genres (Separated by commas)'),
-		Field('audio', 'Soundcloud links(separated by commas)'))
+		Field('roles','list:string'),
+		Field('genres','list:string'),
+		Field('audio_file','upload',uploadfolder='uploads'))
     if form.process().accepted:    
         title = form.vars.title
 	city = string.capitalize(form.vars.city)
         desc = form.vars.desc
 	genres = form.vars.genres
         roles = form.vars.roles
-	audio = form.vars.audio
+	audio_file = form.vars.audio_file
+	response.flash = audio_file
 
 	listing_ndx = db.listing.insert(title=title, city=city,body=desc,
 				    created_by=auth.user.id) 
-	for cur_genre in genres.split(','):
+	
+	if len(genres) ==1 :
+	    cur_genre = genres.index(0)
 	    genre_ndx = db(db.genre.genre_name==cur_genre).select(db.genre.id).first()
 	    if genre_ndx == None:
-		genre_ndx = db.genre.insert(genre_name=cur_genre)
-	    db.listing_genre.insert(listing_ndx=listing_ndx,genre_ndx=genre_ndx)
+    		genre_ndx = db.genre.insert(genre_name=cur_genre)
+            db.listing_genre.insert(listing_ndx=listing_ndx,genre_ndx=genre_ndx)
+	else:
+	    for cur_genre in genres:
+		genre_ndx = db(db.genre.genre_name==cur_genre).select(db.genre.id).first()
+		if genre_ndx == None:
+			genre_ndx = db.genre.insert(genre_name=cur_genre)
+	        db.listing_genre.insert(listing_ndx=listing_ndx,genre_ndx=genre_ndx)
 
-	for cur_role in roles.split(','):
+	for cur_role in roles:
 	    role_ndx = db(db.role.role_name==cur_role).select(db.role.id).first()
 	    if role_ndx == None:
 		role_ndx = db.role.insert(role_name=cur_role)
 	    db.listing_role.insert(listing_ndx=listing_ndx,role_ndx=role_ndx)
 
-	for cur_audio in audio.split(','):
-	    audio_ndx = db(db.audio.path_to == cur_audio).select(db.audio.id).first()
-	    if audio_ndx == None:
-		audio_ndx = db.audio.insert(path_to=cur_audio)
-	    db.listing_audio.insert(listing_ndx=listing_ndx,audio_ndx=audio_ndx)
+	db.audio_file.insert(parent_ndx=listing_ndx,audio=audio_file)
 	redirect(URL('listing',args=listing_ndx))
     elif form.errors:
 	response.flash = 'errors' 
@@ -102,11 +107,14 @@ def listingform():
 @auth.requires_login()
 def auditionform():
     parent_ndx = request.args(0,cast=int)
-    roles = db((db.role.id == db.listing_role.role_ndx) &	
+    rows = db((db.role.id == db.listing_role.role_ndx) &	
 	    (db.listing_role.listing_ndx == parent_ndx)).select(db.role.role_name)
+    roles = []
+    for role in rows:
+	roles.append(role.role_name)
     form = SQLFORM.factory(
 		Field('desc','description', requires=IS_NOT_EMPTY()),
-		Field('roles','list:reference', requires=IS_IN_SET(roles, multiple=True)),
+		Field('roles','list:reference', requires=IS_IN_SET(roles, multiple=True), widget = SQLFORM.widgets.checkboxes.widget),
 		Field('genres','Genres (Separated by commas)'))
     if form.process().accepted:    
         desc = form.vars.desc
@@ -119,13 +127,13 @@ def auditionform():
 	    if genre_ndx == None:
 		genre_ndx = db.genre.insert(genre_name=cur_genre)
 	    db.audition_genre.insert(audition_ndx=audition_ndx,genre_ndx=genre_ndx)
-	'''
-	for cur_role in roles.split(','):
+	
+	for cur_role in roles:
 	    role_ndx = db(db.role.role_name==cur_role).select(db.role.id).first()
 	    if role_ndx == None:
 		role_ndx = db.role.insert(role_name=role)
 	    db.audition_role.insert(audition_ndx=audition_ndx,role_ndx=role_ndx)
-	'''
+	
 	redirect(URL('audition', args=audition_ndx))
     elif form.errors:
 	response.flash = 'errors' 
@@ -140,7 +148,8 @@ def audio():
     FROM AUDIO
     WHERE AUDIO.CREATED_BY = auth.user
     """
-    return dict(form=auth())
+    audio = db(db.audio_file.id == 1).select(db.audio_file.path_to).first()
+    return dict(audio=audio)
 
 def user():
     """

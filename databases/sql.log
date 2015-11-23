@@ -156,3 +156,66 @@ CREATE TABLE city(
 success!
 success!
 success!
+timestamp: 2015-11-23T15:26:51.865518
+CREATE TABLE audio_file(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title CHAR(512),
+    created_by CHAR(512),
+    path_to CHAR(512)
+);
+success!
+timestamp: 2015-11-23T16:05:58.107288
+ALTER TABLE audio_file ADD audio CHAR(512);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2015-11-23T16:30:15.362305
+ALTER TABLE audio_file ADD parent_ndx CHAR(512);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

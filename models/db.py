@@ -170,3 +170,8 @@ db.define_table('audition_role',
 
 db.define_table('city',
 		Field('city_name'))
+
+db.define_table('audio_file',
+		Field('parent_ndx'),
+		Field('created_by'),
+		Field('audio'))
