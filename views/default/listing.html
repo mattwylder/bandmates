@@ -3,12 +3,13 @@
 </script>
 <html>
     <h1>{{=listing.title}}</h1>
-     <!-- change concert.recording_url -->
+    <h3>{{=listing.city}}</h3>
     <p>
-    <b>Genres:</b>
-    {{for genre in genres:}}
-	{{=genre.genre_name + ','}}
-	
+    {{if genres:}}
+	<b>Genres:</b>
+	{{for genre in genres:}}
+	    {{=genre.genre_name + ','}}
+	{{pass}}
     {{pass}}
     <p>
     <b>Open roles:</b>
@@ -18,13 +19,27 @@
     <p>
     <b>Description: </b>{{=listing.body}}
     <p>
-    <b>Song samples:</b><p>
-    {{for link in audio:}}
-    <iframe id="sc-widget" 
-    src="https://w.soundcloud.com/player/?url={{=link.path_to}}"
-    width="500" scrolling="no" frameborder="no"></iframe>
-    <p>
+    {{if audio:}}
+	<b>Song samples:</b><p>
+	{{for link in audio:}}
+	    <iframe id="sc-widget" 
+	    src="https://w.soundcloud.com/player/?url={{=link.path_to}}"
+	    width="500" scrolling="no" frameborder="no"></iframe>
+	    <p>
+	{{pass}}
     {{pass}}
     <p>
-    {{=A('Audition for this band', _href=URL('auditionform', args=listing.id))}}
+    {{if user_authorized:}}
+	{{if auditions:}}
+	    <h3>Auditions:</h3>
+	    {{for audition in auditions:}}
+		<h4>{{=A(''+audition.auth_user.first_name + ' ' + audition.auth_user.last_name,_href=URL('audition',args=audition.audition.id))}}</h4>
+		<p>
+	    {{pass}}
+	{{else:}}
+	    No one has auditioned for your band yet.
+	{{pass}}
+    {{else:}}
+	{{=A('Audition for this band', _href=URL('auditionform', args=listing.id))}}
+    {{pass}}
 </html>

@@ -1,5 +1,6 @@
 {{extend 'layout.html'}}
 <html>
+    {{=search}}
     <a href={{=URL('listingform')}}>Post a listing</a>
     <ul>
     {{for listing in listings:}}

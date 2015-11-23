@@ -57,6 +57,9 @@ auth = Auth(db)
 service = Service()
 plugins = PluginManager()
 
+#auth.settings.extra_fields['auth_user']=[
+#   Field('city_ndx', 'reference city')]
+
 ## create all tables needed by auth if not custom tables
 auth.define_tables(username=False, signature=False)
 
@@ -91,6 +94,7 @@ auth.settings.reset_password_requires_verification = True
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
 
+
 #Classified listing
 db.define_table('listing',
 		Field('title'),
@@ -107,15 +111,13 @@ db.define_table('audition',
 		Field('created_by', 'reference auth_user', 
 		       default=auth.user_id, readable=False,writable=False),
 		Field('date_created','datetime',
-		    default=auth.user_id, readable=False,writable=False),
+		    default=request.now, readable=False,writable=False),
 		Field('body', 'text'))
 
 ## Audio files
 db.define_table('audio',
 		Field('title'),
-		Field('created_by', 'id', default = auth.user_id,
-		       readable=False,writable=False),
-		Field('path_to'))
+		Field('path_to'), redefine=True)
 
 ## Genres of music 
 db.define_table('genre',
@@ -159,3 +161,13 @@ db.define_table('audition_audio',
 		Field('audition_ndx', 'reference audition'),
 		Field('audio_ndx', 'reference audio'))	
 
+db.define_table('audition_genre',
+		Field('audition_ndx','reference audition'),
+		Field('genre_ndx','reference genre'))
+
+db.define_table('audition_role',
+		Field('audition_ndx','reference audition'),
+		Field('role_ndx','reference role'))
+
+db.define_table('city',
+		Field('city_name'))

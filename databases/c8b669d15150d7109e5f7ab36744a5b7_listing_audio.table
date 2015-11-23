@@ -13,7 +13,7 @@ p6
 I3
 sS'sql'
 p7
-S'INTEGER REFERENCES audio (created_by) ON DELETE CASCADE  '
+S'INTEGER REFERENCES audio (id) ON DELETE CASCADE  '
 p8
 sS'notnull'
 p9

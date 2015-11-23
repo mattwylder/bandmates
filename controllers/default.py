@@ -16,39 +16,14 @@ def index():
     if you need a simple wiki simply replace the two lines below with:
     return auth.wiki()
     """
+    search = SQLFORM.factory(Field('query', 'Search:'))
     listings = db(db.listing.id > 0).select();
-    return dict(listings=listings)
+    return dict(search=search,listings=listings,user=user)
 
 @auth.requires_login()
 def listing():
-    """
-    listing_id = form.get_parameter("id")
-
-    SELECT *
-    FROM listing
-    WHERE listing.id = listing_id 
-
-    CURSOR roles IS
-	SELECT role.role_name
-        FROM listing_role JOIN role
-	ON listing_role.role_ndx = role.id
-	WHERE listing_role.listing_idx = listing_id 
-    
-    CURSOR audio IS
-	SELECT *
-	FROM listing_audio JOIN audio
-	ON listing_audio.audio_ndx = audio.id
-	WHERE listing_audio.listing_idx = listing_id
-    """
-    genre_str="""SELECT *
-	FROM listing_genre JOIN genre
-	ON listing_genre.genre_ndx = genre.id
-	WHERE listing_genre.listing_ndx =
-    """
     listing = db.listing(request.args(0,cast=int)) or redirect(URL('index'))
-    '''genres = db(db.listing_genre.listing_ndx == listing.id).select(
-	    db.genre.ALL,
-	    left=db.listing_genre.on(listing == db.listing_genre.listing_ndx))'''
+    user_authorized =auth.user.id == listing.created_by
     genres=db((db.listing_genre.genre_ndx== db.genre.id) & 
 	     (db.listing_genre.listing_ndx == listing.id)).select(
 	    db.genre.genre_name)
@@ -58,17 +33,27 @@ def listing():
     audio = db((db.listing_audio.audio_ndx== db.audio.id) &
 	       (db.listing_audio.listing_ndx == listing.id)).select(
 	    db.audio.path_to)
-    return dict(listing=listing, genres=genres,roles=roles, audio=audio)
+    auditions = None
+    if user_authorized:
+	auditions = db((db.audition.created_by == db.auth_user.id) &
+		    (db.audition.parent_ndx == listing.id)).select(db.audition.id,db.auth_user.first_name, db.auth_user.last_name)
+    return dict(user_authorized=user_authorized,listing=listing, genres=genres,roles=roles, audio=audio, auditions=auditions)
 
 @auth.requires_login()
 def audition():
-    '''
-    if auth.user() = thisAudition.parent.created_by
-    '''
-    created_by = "usernameexample"
-    roles = ['guitar', 'bass']
-    body = 'i like this this and that'
-    return dict(created_by=created_by, roles=roles, body=body)
+    audition = db.audition(request.args(0,cast=int)) or redirect(URL('index')) 
+    author = db(db.auth_user.id==audition.created_by).select().first()
+    genres = db((db.audition_genre.genre_ndx== db.genre.id) & 
+	     (db.audition_genre.audition_ndx == audition.id)).select(
+	    db.genre.genre_name)
+    roles = db((db.audition_role.role_ndx == db.role.id) &
+	       (db.audition_role.audition_ndx == audition.id)).select(
+	    db.role.role_name)
+    audio = db((db.audition_audio.audio_ndx== db.audio.id) &
+	       (db.audition_audio.audition_ndx == audition.id)).select(
+	    db.audio.path_to)
+    return dict(author=author,audition=audition, genres=genres,roles=roles, audio=audio)
+
 
 @auth.requires_login()
 def listingform():
@@ -88,7 +73,7 @@ def listingform():
 	audio = form.vars.audio
 
 	listing_ndx = db.listing.insert(title=title, city=city,body=desc,
-					created_by=auth.user.id) 
+				    created_by=auth.user.id) 
 	for cur_genre in genres.split(','):
 	    genre_ndx = db(db.genre.genre_name==cur_genre).select(db.genre.id).first()
 	    if genre_ndx == None:
@@ -106,6 +91,7 @@ def listingform():
 	    if audio_ndx == None:
 		audio_ndx = db.audio.insert(path_to=cur_audio)
 	    db.listing_audio.insert(listing_ndx=listing_ndx,audio_ndx=audio_ndx)
+	redirect(URL('listing',args=listing_ndx))
     elif form.errors:
 	response.flash = 'errors' 
 
@@ -128,13 +114,15 @@ def auditionform():
 	    genre_ndx = db(db.genre.genre_name==cur_genre).select(db.genre.id).first()
 	    if genre_ndx == None:
 		genre_ndx = db.genre.insert(genre_name=cur_genre)
-	db.audition_genre.insert(listing_ndx=audition_ndx,genre_ndx=genre_ndx)
-
+	    db.audition_genre.insert(audition_ndx=audition_ndx,genre_ndx=genre_ndx)
+	'''
 	for cur_role in roles.split(','):
 	    role_ndx = db(db.role.role_name==cur_role).select(db.role.id).first()
 	    if role_ndx == None:
 		role_ndx = db.role.insert(role_name=role)
-	db.audition_role.insert(listing_ndx=audition_ndx,role_ndx=role_ndx)
+	    db.audition_role.insert(audition_ndx=audition_ndx,role_ndx=role_ndx)
+	'''
+	redirect(URL('audition', args=audition_ndx))
     elif form.errors:
 	response.flash = 'errors' 
 
