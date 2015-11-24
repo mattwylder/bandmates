@@ -1,28 +1,26 @@
 
 {{extend 'layout.html'}}
-<script src="https://w.soundcloud.com/player/api.js" type="text/javascript">
-</script>
 <html>
     <h2>{{=author.first_name + ' ' + author.last_name}}</h2>
-    <h3>{{=author.email}}</h3>
-    <p>
-    {{=audition.created_by}}
+    <h4>{{=author.email}}</h4>
+    <br>
     {{if genres:}}
 	<b>Genres:</b>
         {{for genre in genres:}}
-	    {{=genre.genre_name}}
+	    <li>{{=genre.genre_name}}</li>
 	{{pass}}
     {{pass}}
-    <p>
+    <br>
     {{if roles:}}
 	<b>Roles:</b>
 	{{for role in roles:}}
-	    {{=role.role_name}}
+	    <li>{{=role.role_name}}</li>
 	{{pass}}
     {{pass}}
-    <p>
-    <b>Description: </b>{{=audition.body}}
-    <p>
+    <br>
+    <b>Description: </b>
+    <p>{{=audition.body}}</p>
+    <br>
     {{if audio:}}
 	<b>Song samples:</b><p>
 	{{for link in audio:}}

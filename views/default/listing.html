@@ -1,24 +1,25 @@
 {{extend 'layout.html'}}
-<script src="https://w.soundcloud.com/player/api.js" type="text/javascript">
-</script>
 <html>
-    <h1>{{=listing.title}}</h1>
-    <h3>{{=listing.city}}</h3>
-    <p>
+    <h2>{{=listing.title}}</h2>
+    <h4>{{=listing.city}}</h4>
+    <br>
     {{if genres:}}
 	<b>Genres:</b>
 	{{for genre in genres:}}
-	    {{=genre.genre_name}}
+	    <li>{{=genre.genre_name}}</li>
 	{{pass}}
+	<br>
     {{pass}}
-    <p>
-    <b>Open roles:</b>
-    {{for role in roles:}}
-	{{=role.role_name}}
+    {{if roles:}}
+	<b>Open roles:</b>
+	{{for role in roles:}}
+	    <li>{{=role.role_name}}</li>
+	{{pass}}
+        <br>
     {{pass}}
-    <p>
-    <b>Description: </b>{{=listing.body}}
-    <p>
+    <b>Description:</b>
+    <p>{{=listing.body}}</p>
+    <br>
     {{if audio:}}
 	<b>Song samples:</b><p>
 	{{for link in audio:}}
@@ -40,6 +41,6 @@
 	    No one has auditioned for your band yet.
 	{{pass}}
     {{else:}}
-	{{=A('Audition for this band', _href=URL('auditionform', args=listing.id))}}
+	<button>{{=A('Audition for this band', _href=URL('auditionform', args=listing.id))}}</button>
     {{pass}}
 </html>

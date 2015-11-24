@@ -10,19 +10,25 @@
     </form>
     <h2>{{=city_msg}}</h2>
     <a href={{=URL('listingform')}}>
-    <p><button>Post a new listing</button></a>
+	<button>Post a new listing</button>
+    </a>
     {{if listings:}}
-    <ul>
-    {{for listing in listings:}}
-	{{user = db(db.auth_user.id== listing.created_by).select().first()}}
-	<li>
-	    <h2><a href={{=URL("listing", args=listing.id)}}>{{=listing.title}}</a></h2>
-	    <h4>{{=user.first_name + " " + user.last_name}} - {{=listing.city}}</h4	</li> 
-	</li> 
-    {{pass}}
-    
-    </ul>
+	<ul>
+	{{for listing in listings:}}
+	    {{user = db(db.auth_user.id== listing.created_by).select().first()}}
+	    <li>
+		<h2>
+		    <a href={{=URL("listing", args=listing.id)}}>
+			{{=listing.title}}
+		    </a>
+		</h2>
+		<h4>
+		{{=user.first_name + " " + user.last_name}} - {{=listing.city}}
+		</h4> 
+	    </li> 
+	{{pass}}
+	</ul>
     {{else:}}
-	<h4>No results found<h4>
+	<h4>No results found</h4>
     {{pass}}
 </html>
