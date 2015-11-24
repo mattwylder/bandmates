@@ -93,6 +93,7 @@ auth.settings.reset_password_requires_verification = True
 
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
+
 import string
 #Classified listing
 db.define_table('listing',
@@ -114,11 +115,6 @@ db.define_table('audition',
 		    default=request.now, readable=False,writable=False),
 		Field('body', 'text'), requires=IS_NOT_EMPTY())
 
-## Audio files
-db.define_table('audio',
-		Field('title'),
-		Field('path_to'), redefine=True)
-
 ## Genres of music 
 db.define_table('genre',
 		Field('genre_name'))
@@ -133,11 +129,6 @@ db.define_table('listing_role',
 		       readable=False,writable=False),
 		Field('role_ndx', 'reference role'))
 
-## Maps listings to audio
-db.define_table('listing_audio',
-		Field('listing_ndx', 'reference listing'),
-		Field('audio_ndx', 'reference audio'))	
-
 ## Maps listings to genres
 db.define_table('listing_genre',
 		Field('listing_ndx', 'reference listing',
@@ -150,16 +141,8 @@ db.define_table('user_genre',
 		       default=auth.user_id, readable=False,writable=False),
 		Field('genre_ndx', 'reference genre'))			
 
-## Maps users to audio used for creating auditions or listings
-db.define_table('user_audio',
-		Field('user_ndx', 'reference auth_user'),
-		Field('audio_ndx', 'reference audio'))		
-
 ## Maps auditions to audio files. Users may not want to include all
 #  of their music samples in an audition.
-db.define_table('audition_audio',
-		Field('audition_ndx', 'reference audition'),
-		Field('audio_ndx', 'reference audio'))	
 
 db.define_table('audition_genre',
 		Field('audition_ndx','reference audition'),
