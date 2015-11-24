@@ -4,3 +4,4 @@ databases/*
 uploads/*
 sessions/*
 errors/*
+*.log
