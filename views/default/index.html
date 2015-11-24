@@ -1,6 +1,10 @@
 {{extend 'layout.html'}}
 <html>
-    <b>Search</b>
+    <a href={{=URL('listingform')}}>
+	<button>Post a new listing</button>
+    </a>
+    <br><br>
+    <b>Search listings</b>
     <form>
 	City:
 	<input name="city"/>
@@ -8,23 +12,19 @@
 	<input name="roles"/>
 	<input type="submit"/>	
     </form>
-    <h2>{{=city_msg}}</h2>
-    <a href={{=URL('listingform')}}>
-	<button>Post a new listing</button>
-    </a>
+    <br>
     {{if listings:}}
+	<h2>{{=city_msg}}</h2>
 	<ul>
 	{{for listing in listings:}}
 	    {{user = db(db.auth_user.id== listing.created_by).select().first()}}
 	    <li>
-		<h2>
+		<h3>
 		    <a href={{=URL("listing", args=listing.id)}}>
 			{{=listing.title}}
 		    </a>
-		</h2>
-		<h4>
-		{{=user.first_name + " " + user.last_name}} - {{=listing.city}}
-		</h4> 
+		</h3>
+		 {{=listing.city + " - " + user.first_name + " " + user.last_name}}
 	    </li> 
 	{{pass}}
 	</ul>

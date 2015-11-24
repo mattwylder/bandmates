@@ -17,12 +17,12 @@ def index():
     return auth.wiki()
     """
     import string
-    city = request.args(0)
-    roles = []
     city_msg = ''
     if request.vars.city and request.vars.roles:
 	city = string.capitalize(request.vars.city)
 	roles = request.vars.roles.replace(' ', '').split(',') 
+	if roles:
+	    city_msg = 'Showing results in ' + city
 	listings= None
 	for role in roles:
 	    listing = db((db.listing.id == db.listing_role.listing_ndx) &
@@ -41,7 +41,7 @@ def index():
 		listings=listing
     elif request.vars.city and not request.vars.roles:
 	city = string.capitalize(request.vars.city)
-	city_msg = 'Showing listings for ' + city
+	city_msg = 'Showing results in ' + city
 	listings = db(db.listing.city == city).select(orderby=~db.listing.date_created)
     elif request.vars.roles:
 	roles = request.vars.roles.replace(' ', '').split(',') 
@@ -60,8 +60,10 @@ def index():
 		listings = listings |listing
 	    elif listing:
 		listings = listing
+	city_msg = 'Showing results in all cities'
     elif not request.vars.roles and not request.vars.city:
         listings=db(db.listing).select(orderby=~db.listing.date_created)
+	city_msg = 'Showing listings in all cities'
     return dict(listings=listings,user=auth.user,city_msg=city_msg)
 
 @auth.requires_login()
