@@ -17,8 +17,22 @@ def index():
     return auth.wiki()
     """
     import string
-    listings = db(db.listing.city == string.capitalize(auth.user.city)).select()
-    return dict(listings=listings,user=auth.user)
+    city = request.args(0)
+    roles = []
+    city_msg = ''
+    if request.vars.city:
+	city = string.capitalize(request.vars.city)
+	city_msg = 'Showing listings for ' + city
+	city_listings = db(db.listing.city == city).select(orderby=~db.listing.date_created)
+    if request.vars.roles:
+	roles = request.vars.roles.replace(' ', '').split(',') 
+	role_ndxs=[]		
+	for role in roles:
+	    role_ndx = db(db.role.role_name == role).select(db.role.id).first()
+	    role_ndxs.append(role_ndx)
+	city_msg = roles
+    listings=db(db.listing).select(orderby=~db.listing.date_created)
+    return dict(listings=listings,user=auth.user,city_msg=city_msg)
 
 @auth.requires_login()
 def listing():
