@@ -20,18 +20,48 @@ def index():
     city = request.args(0)
     roles = []
     city_msg = ''
-    if request.vars.city:
+    if request.vars.city and request.vars.roles:
+	city = string.capitalize(request.vars.city)
+	roles = request.vars.roles.replace(' ', '').split(',') 
+	listings= None
+	for role in roles:
+	    listing = db((db.listing.id == db.listing_role.listing_ndx) &
+		(db.listing.city == city) &
+		(db.listing_role.role_ndx == db.role.id) &
+		(db.role.role_name == role)).select(
+		    db.listing.id,
+		    db.listing.created_by,
+		    db.listing.title,
+		    db.listing.city,
+		    db.listing.date_created,
+		    orderby=~db.listing.date_created)
+	    if listing and listings:
+		listings = listings |listing
+	    elif listing:
+		listings=listing
+    elif request.vars.city and not request.vars.roles:
 	city = string.capitalize(request.vars.city)
 	city_msg = 'Showing listings for ' + city
-	city_listings = db(db.listing.city == city).select(orderby=~db.listing.date_created)
-    if request.vars.roles:
+	listings = db(db.listing.city == city).select(orderby=~db.listing.date_created)
+    elif request.vars.roles:
 	roles = request.vars.roles.replace(' ', '').split(',') 
-	role_ndxs=[]		
+	listings= None
 	for role in roles:
-	    role_ndx = db(db.role.role_name == role).select(db.role.id).first()
-	    role_ndxs.append(role_ndx)
-	city_msg = roles
-    listings=db(db.listing).select(orderby=~db.listing.date_created)
+	    listing = db((db.listing.id == db.listing_role.listing_ndx) &
+		(db.listing_role.role_ndx == db.role.id) &
+		(db.role.role_name == role)).select(
+		    db.listing.id,
+		    db.listing.created_by,
+		    db.listing.title,
+		    db.listing.city,
+		    db.listing.date_created,
+		    orderby=~db.listing.date_created)
+	    if listing and listings:
+		listings = listings |listing
+	    elif listing:
+		listings = listing
+    elif not request.vars.roles and not request.vars.city:
+        listings=db(db.listing).select(orderby=~db.listing.date_created)
     return dict(listings=listings,user=auth.user,city_msg=city_msg)
 
 @auth.requires_login()
@@ -71,52 +101,10 @@ def audition():
 
 @auth.requires_login()
 def listingform():
-    '''
-    import string
-    form = SQLFORM.factory(
-		Field('title','title',requires=IS_NOT_EMPTY()),
-		Field('city','City', default=string.capitalize(auth.user.city),requires=IS_NOT_EMPTY()),
-		Field('desc','description', requires=IS_NOT_EMPTY()),
-		Field('roles','list:string'),
-		Field('genres','list:string'),
-		Field('audio_file','upload',uploadfolder='uploads'))
-    if form.process().accepted:    
-        title = form.vars.title
-	city = string.capitalize(form.vars.city)
-        desc = form.vars.desc
-	genres = form.vars.genres
-        roles = form.vars.roles
-	audio_file = form.vars.audio_file
-	response.flash = audio_file
-
-	listing_ndx = db.listing.insert(title=title, city=city,body=desc,
-				    created_by=auth.user.id) 
-	db.audio_file.insert(listing_ndx=listing_ndx,audio=audio_file)
-	
-	if len(genres) ==1 :
-	    cur_genre = genres.index(0)
-	    genre_ndx = db(db.genre.genre_name==cur_genre).select(db.genre.id).first()
-	    if genre_ndx == None:
-    		genre_ndx = db.genre.insert(genre_name=cur_genre)
-            db.listing_genre.insert(listing_ndx=listing_ndx,genre_ndx=genre_ndx)
-	else:
-	    for cur_genre in genres:
-		genre_ndx = db(db.genre.genre_name==cur_genre).select(db.genre.id).first()
-		if genre_ndx == None:
-			genre_ndx = db.genre.insert(genre_name=cur_genre)
-	        db.listing_genre.insert(listing_ndx=listing_ndx,genre_ndx=genre_ndx)
-
-	for cur_role in roles:
-	    role_ndx = db(db.role.role_name==cur_role).select(db.role.id).first()
-	    if role_ndx == None:
-		role_ndx = db.role.insert(role_name=cur_role)
-	    db.listing_role.insert(listing_ndx=listing_ndx,role_ndx=role_ndx)
-
-	redirect(URL('listing',args=listing_ndx))
-    elif form.errors:
-	response.flash = 'errors' 
-    '''
-    form = SQLFORM.factory(db.listing,db.role,db.genre, db.audio_file)
+    form = SQLFORM.factory(db.listing,
+			   Field('role','list:string'),
+			   Field('genre','list:string'), 
+			   db.audio_file)
     if form.process().accepted:
 	import string
 	form.vars.city = string.capitalize(form.vars.city)
@@ -124,17 +112,10 @@ def listingform():
 	form.vars.listing_ndx=listing_ndx
 	if form.vars.audio:
 	    db.audio_file.insert(**db.audio_file._filter_fields(form.vars))
-	roles = form.vars.role_name
-	genres=form.vars.genre_name
+	roles = form.vars.role
+	genres=form.vars.genre
 	#TODO: Single entries are broken into single characters for some reason
 	#TODO: Double entries on a single form get double added to listing
-	'''
-	if len(roles.index(0)) == 1:
-	    i = 1
-	    role = ''
-	    while i in range(len(roles)-1):
-		roles = roles + roles.pop(i)
-	'''
 	for role in roles:
 	    if role:
 		role_ndx = db(db.role.role_name==role).select(db.role.id).first()
@@ -162,14 +143,15 @@ def auditionform():
     form = SQLFORM.factory(
 		db.audition,
 		Field('roles','list:reference', requires=IS_IN_SET(roles, multiple=True), widget = SQLFORM.widgets.checkboxes.widget),
-		db.genre,db.audio_file)
+		Field('genre','list:string'),
+		db.audio_file)
     if form.process().accepted:    
 	form.vars.parent_ndx = parent_ndx
 	audition_ndx = db.audition.insert(**db.audition._filter_fields(form.vars))
 	form.vars.audition_ndx=audition_ndx
 	if form.vars.audio:
 	    db.audio_file.insert(**db.audio_file._filter_fields(form.vars))
-	genres = form.vars.genre_name
+	genres = form.vars.genre
         roles = form.vars.roles
     
 	for role in roles:

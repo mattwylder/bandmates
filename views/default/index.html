@@ -2,13 +2,16 @@
 <html>
     <b>Search</b>
     <form>
+	City:
 	<input name="city"/>
+	Open Roles (comma separated):
 	<input name="roles"/>
 	<input type="submit"/>	
     </form>
     <h2>{{=city_msg}}</h2>
     <a href={{=URL('listingform')}}>
-    <p><button>Post a listing</button></a>
+    <p><button>Post a new listing</button></a>
+    {{if listings:}}
     <ul>
     {{for listing in listings:}}
 	{{user = db(db.auth_user.id== listing.created_by).select().first()}}
@@ -17,5 +20,9 @@
 	    <h4>{{=user.first_name + " " + user.last_name}} - {{=listing.city}}</h4	</li> 
 	</li> 
     {{pass}}
+    
     </ul>
+    {{else:}}
+	<h4>No results found<h4>
+    {{pass}}
 </html>

@@ -121,11 +121,11 @@ db.define_table('audio',
 
 ## Genres of music 
 db.define_table('genre',
-		Field('genre_name', 'list:string'))
+		Field('genre_name'))
 
 ## Role of a user e.g. guitarist, drummer, bassist
 db.define_table('role',
-		Field('role_name','list:string'))
+		Field('role_name'))
 
 ## Maps listing to roles
 db.define_table('listing_role',
