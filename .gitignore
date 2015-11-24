@@ -1,0 +1,5 @@
+*.swp
+databases/*
+*.mp3
+uploads/*
+sessions/*
