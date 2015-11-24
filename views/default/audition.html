@@ -1,0 +1,40 @@
+
+{{extend 'layout.html'}}
+<script src="https://w.soundcloud.com/player/api.js" type="text/javascript">
+</script>
+<html>
+    <h2>{{=author.first_name + ' ' + author.last_name}}</h2>
+    <h3>{{=author.email}}</h3>
+    <p>
+    {{=audition.created_by}}
+    {{if genres:}}
+	<b>Genres:</b>
+        {{for genre in genres:}}
+	    {{=genre.genre_name}}
+	{{pass}}
+    {{pass}}
+    <p>
+    {{if roles:}}
+	<b>Roles:</b>
+	{{for role in roles:}}
+	    {{=role.role_name}}
+	{{pass}}
+    {{pass}}
+    <p>
+    <b>Description: </b>{{=audition.body}}
+    <p>
+    {{if audio:}}
+	<b>Song samples:</b><p>
+	{{for link in audio:}}
+	    <audio controls
+		src="{{=URL('static',link.audio)}}">
+		Your user agent does not support the HTML5 Audio element.
+		</audio>
+	<p>
+	{{pass}}
+    {{pass}}
+    <p>
+</html>
+
+
+

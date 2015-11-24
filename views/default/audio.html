@@ -1,0 +1,20 @@
+{{extend 'layout.html'}}
+<html>{{=URL('static',audio.audio)}}
+<p>
+<audio controls
+  src="{{=URL('static',audio.audio)}}">
+Your user agent does not support the HTML5 Audio element.
+</audio>
+<p>
+{{=URL('static','crawlersout.mp3')}}
+<p>
+<audio controls
+  src="{{=URL('static','crawlersout.mp3')}}">
+Your user agent does not support the HTML5 Audio element.
+</audio>
+<p>{{=URL('models','fart.mp3')}}<p>
+<audio controls
+  src="{{=URL('models','crawlersout.mp3')}}">
+Your user agent does not support the HTML5 Audio element.
+</audio>
+</html>

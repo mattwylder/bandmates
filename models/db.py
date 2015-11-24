@@ -93,15 +93,16 @@ auth.settings.reset_password_requires_verification = True
 
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
-
+import string
 #Classified listing
 db.define_table('listing',
-		Field('title'),
-		Field('city'),
+		Field('title',requires=IS_NOT_EMPTY()),
+		Field('city',
+		    requires=IS_NOT_EMPTY()),
 		Field('created_by', 'reference auth_user', default=auth.user_id,readable=False,writable=False),
 		Field('date_created','datetime',
 		       default=request.now, readable=False,writable=False),
-		Field('body', 'text'))
+		Field('body', 'text', requires=IS_NOT_EMPTY()))
 
 ## An 'application' to a listing
 db.define_table('audition',
@@ -111,7 +112,7 @@ db.define_table('audition',
 		       default=auth.user_id, readable=False,writable=False),
 		Field('date_created','datetime',
 		    default=request.now, readable=False,writable=False),
-		Field('body', 'text'))
+		Field('body', 'text'), requires=IS_NOT_EMPTY())
 
 ## Audio files
 db.define_table('audio',
@@ -120,11 +121,11 @@ db.define_table('audio',
 
 ## Genres of music 
 db.define_table('genre',
-		Field('genre_name'))
+		Field('genre_name', 'list:string'))
 
 ## Role of a user e.g. guitarist, drummer, bassist
 db.define_table('role',
-		Field('role_name'))
+		Field('role_name','list:string'))
 
 ## Maps listing to roles
 db.define_table('listing_role',
@@ -170,8 +171,14 @@ db.define_table('audition_role',
 
 db.define_table('city',
 		Field('city_name'))
-
+import os
+##For some reason <audio> won't play mp3s unless they're in the static folder
 db.define_table('audio_file',
-		Field('parent_ndx'),
-		Field('created_by'),
-		Field('audio'))
+		Field('created_by','reference auth_user', default=auth.user_id,
+			readable=False,writable=False),
+		Field('listing_ndx','reference listing', default=None,
+			readable=False,writable=False),
+		Field('audition_ndx','reference audition',default=None,
+			readable=False,writable=False),
+		Field('audio','upload',
+			uploadfolder=os.path.join(request.folder,'static/')))

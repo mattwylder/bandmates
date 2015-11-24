@@ -8,13 +8,13 @@
     {{if genres:}}
 	<b>Genres:</b>
 	{{for genre in genres:}}
-	    {{=genre.genre_name + ','}}
+	    {{=genre.genre_name}}
 	{{pass}}
     {{pass}}
     <p>
     <b>Open roles:</b>
     {{for role in roles:}}
-	{{=role.role_name + ','}}
+	{{=role.role_name}}
     {{pass}}
     <p>
     <b>Description: </b>{{=listing.body}}
@@ -22,10 +22,10 @@
     {{if audio:}}
 	<b>Song samples:</b><p>
 	{{for link in audio:}}
-	    <iframe id="sc-widget" 
-	    src="https://w.soundcloud.com/player/?url={{=link.path_to}}"
-	    width="500" scrolling="no" frameborder="no"></iframe>
-	    <p>
+	    <audio controls
+		src="{{=URL('static',link.audio)}}">
+		Your user agent does not support the HTML5 Audio element.
+	    </audio>
 	{{pass}}
     {{pass}}
     <p>
