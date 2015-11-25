@@ -146,7 +146,6 @@ def listingform():
 	roles = form.vars.role
 	genres=form.vars.genre
 	#TODO: Single entries are broken into single characters for some reason
-	#TODO: Double entries on a single form get double added to listing
 	for role in roles:
 	    if role:
 		role_ndx = db(db.role.role_name==role).select(db.role.id).first()
