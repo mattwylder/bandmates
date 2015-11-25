@@ -129,7 +129,7 @@ def listingform():
 	
 	for genre in genres:
 	    if genre:
-		genre_ndx = db(db.genre.genre_name==role).select(db.genre.id).first()
+		genre_ndx = db(db.genre.genre_name==genre).select(db.genre.id).first()
 		if(genre_ndx==None):
 		   genre_ndx=db.genre.insert(genre_name=genre)
 		db.listing_genre.insert(listing_ndx=listing_ndx, genre_ndx=genre_ndx)
