@@ -86,12 +86,12 @@ def listing():
 
     delete_button = FORM(INPUT(_type='submit'))
     if delete_button.process().accepted:
-	#TODO: doesn't delete map records
-	from gluon.tools import Crud
-	crud = Crud(db)
-	crud.delete(db.listing, request.args(0,cast=int))
+	auditions = db(db.audition.parent_ndx == listing.id).select(db.audition.id)
 	for audition in auditions:
-	    crud.delete(db.audition, audition.id)
+	    db(db.audition_role.audition_ndx == audition.id).delete() 
+	    db(db.audition_genre.audition_ndx == audition.id).delete()
+	    db(db.audition.id == audition.id).delete()
+	db(db.listing.id == listing.id).delete()
 	redirect(URL('index'))
 
     return dict(user_authorized=user_authorized,listing=listing, 
@@ -121,16 +121,14 @@ def audition():
 
     delete_button = FORM(INPUT(_type='submit'))
     if delete_button.process().accepted:
-	from gluon.tools import Crud
-	crud = Crud(db)
-	#TODO: doesn't delete records from map_table
-	crud.delete(db.audition, request.args(0,cast=int)) 
+	db(db.audition_role.audition_ndx == audition.id).delete() 
+	db(db.audition_genre.audition_ndx == audition.id).delete()
+	db(db.audition.id == audition.id).delete()
 	redirect(URL('index'))
 
     return dict(author=author,audition=audition,
 		genres=genres,roles=roles, audio=audio, 
 		delete_button=delete_button)
-
 
 @auth.requires_login()
 def listingform():
@@ -175,7 +173,9 @@ def auditionform():
 	roles.append(role.role_name)
     form = SQLFORM.factory(
 		db.audition,
-		Field('roles','list:reference', requires=IS_IN_SET(roles, multiple=True), widget = SQLFORM.widgets.checkboxes.widget),
+		Field('roles','list:reference', 
+			requires=IS_IN_SET(roles, multiple=True), 
+			widget = SQLFORM.widgets.checkboxes.widget),
 		Field('genre','list:string'),
 		db.audio_file)
     if form.process().accepted:    
@@ -217,12 +217,6 @@ def audio():
     audio_ndx = request.args(0,cast=int)
     audio = db(db.audio_file.id == audio_ndx).select(db.audio_file.audio).first()
     return dict(audio=audio)
-
-@auth.requires_login()
-def audioform():
-    form = SQLFORM(db.audio_file)
-    return dict(form=form)
-
 
 def user():
     """
