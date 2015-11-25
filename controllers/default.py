@@ -21,8 +21,7 @@ def index():
     if request.vars.city and request.vars.roles:
 	city = string.capitalize(request.vars.city)
 	roles = request.vars.roles.replace(' ', '').split(',') 
-	if roles:
-	    city_msg = 'Showing results in ' + city
+	city_msg = 'Showing results in ' + city
 	listings= None
 	for role in roles:
 	    listing = db((db.listing.id == db.listing_role.listing_ndx) &
@@ -89,6 +88,9 @@ def listing():
 @auth.requires_login()
 def audition():
     audition = db.audition(request.args(0,cast=int)) or redirect(URL('index')) 
+    parent = db.listing(audition.parent_ndx)
+    if auth.user_id != audition.created_by and auth.user_id != parent.created_by:
+	redirect(URL('index'))
     author = db(db.auth_user.id==audition.created_by).select().first()
     genres = db((db.audition_genre.genre_ndx== db.genre.id) & 
 	     (db.audition_genre.audition_ndx == audition.id)).select(
