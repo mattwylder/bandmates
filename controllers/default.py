@@ -151,14 +151,26 @@ def listingform():
 		role_ndx = db(db.role.role_name==role).select(db.role.id).first()
 		if(role_ndx==None):
 		   role_ndx=db.role.insert(role_name=role)
-		db.listing_role.insert(listing_ndx=listing_ndx, role_ndx=role_ndx)
+
+		role_map = db((db.listing_role.role_ndx == role_ndx) &
+			    (db.listing_role.listing_ndx==listing_ndx)).select(
+			    db.listing_role.id).first()
+		if(role_map==None):
+		    db.listing_role.insert(listing_ndx=listing_ndx,
+					    role_ndx=role_ndx)
 	
 	for genre in genres:
 	    if genre:
 		genre_ndx = db(db.genre.genre_name==genre).select(db.genre.id).first()
 		if(genre_ndx==None):
 		   genre_ndx=db.genre.insert(genre_name=genre)
-		db.listing_genre.insert(listing_ndx=listing_ndx, genre_ndx=genre_ndx)
+
+		genre_map = db((db.listing_genre.genre_ndx==genre_ndx) &
+				(db.listing_genre.listing_ndx==listing_ndx)).select(
+				db.listing_genre.id).first()
+		if(genre_map==None):
+		    db.listing_genre.insert(listing_ndx=listing_ndx,
+					    genre_ndx=genre_ndx)
 	redirect(URL('listing',args=listing_ndx))
     return dict(form=form)
 
@@ -191,15 +203,22 @@ def auditionform():
 		role_ndx = db(db.role.role_name==role).select(db.role.id).first()
 		if(role_ndx==None):
 		   role_ndx=db.role.insert(role_name=role)
-		db.audition_role.insert(audition_ndx=audition_ndx, role_ndx=role_ndx)
-	
+		db.audition_role.insert(audition_ndx=audition_ndx,
+					    role_ndx=role_ndx)
+			
 	for genre in genres:
 	    if genre:
-		genre_ndx = db(db.genre.genre_name==role).select(db.genre.id).first()
+		genre_ndx = db(db.genre.genre_name==genre).select(
+				db.genre.id).first()
 		if(genre_ndx==None):
-		   genre_ndx=db.genre.insert(genre_name=genre)
-		db.audition_genre.insert(audition_ndx=audition_ndx, genre_ndx=genre_ndx)
-	
+		   genre_ndx=db.genre.insert(genre_name=genre)	
+
+		genre_map = db((db.audition_genre.genre_ndx == genre_ndx) &
+			    (db.audition_genre.audition_ndx==audition_ndx)).select(
+			    db.audition_genre.id).first()
+		if(genre_map==None):
+		    db.audition_genre.insert(audition_ndx=audition_ndx,
+					    genre_ndx=genre_ndx)
 	redirect(URL('audition', args=audition_ndx))
     elif form.errors:
 	response.flash = 'errors' 
