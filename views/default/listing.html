@@ -43,4 +43,9 @@
     {{else:}}
 	<button>{{=A('Audition for this band', _href=URL('auditionform', args=listing.id))}}</button>
     {{pass}}
+    <br><br>
+    {{if user_authorized:}}
+    <b>Delete without confirmation:</b>
+    {{=delete_button}}
+    {{pass}}
 </html>

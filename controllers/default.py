@@ -80,11 +80,29 @@ def listing():
     auditions = None
     if user_authorized:
 	auditions = db((db.audition.created_by == db.auth_user.id) &
-		    (db.audition.parent_ndx == listing.id)).select(db.audition.id,db.auth_user.first_name, db.auth_user.last_name)
-    return dict(user_authorized=user_authorized,listing=listing, genres=genres,roles=roles, audio=audio, auditions=auditions)
+		    (db.audition.parent_ndx == listing.id)).select(
+		    db.audition.id,db.auth_user.first_name, 
+		    db.auth_user.last_name)
+
+    delete_button = FORM(INPUT(_type='submit'))
+    if delete_button.process().accepted:
+	#TODO: doesn't delete map records
+	from gluon.tools import Crud
+	crud = Crud(db)
+	crud.delete(db.listing, request.args(0,cast=int))
+	for audition in auditions:
+	    crud.delete(db.audition, audition.id)
+	redirect(URL('index'))
+
+    return dict(user_authorized=user_authorized,listing=listing, 
+		genres=genres,roles=roles, audio=audio, 
+		auditions=auditions,delete_button=delete_button)
 
 #TODO: for some reason the auth requirement below affects every page
-#@auth.requires(auth.user_id == db.listing(db.audition(request.args(0,cast=int)).parent_ndx).created_by or auth.user_id == db.audition(request.args(0,cast=int)).created_by)
+#
+#@auth.requires(auth.user_id == db.listing(
+#		db.audition(request.args(0,cast=int)).parent_ndx).created_by 
+#		or auth.user_id == db.audition(request.args(0,cast=int)).created_by)
 @auth.requires_login()
 def audition():
     audition = db.audition(request.args(0,cast=int)) or redirect(URL('index')) 
@@ -100,7 +118,18 @@ def audition():
 	    db.role.role_name)
     audio = db(db.audio_file.audition_ndx == audition.id).select(
 	    db.audio_file.audio)
-    return dict(author=author,audition=audition, genres=genres,roles=roles, audio=audio)
+
+    delete_button = FORM(INPUT(_type='submit'))
+    if delete_button.process().accepted:
+	from gluon.tools import Crud
+	crud = Crud(db)
+	#TODO: doesn't delete records from map_table
+	crud.delete(db.audition, request.args(0,cast=int)) 
+	redirect(URL('index'))
+
+    return dict(author=author,audition=audition,
+		genres=genres,roles=roles, audio=audio, 
+		delete_button=delete_button)
 
 
 @auth.requires_login()
