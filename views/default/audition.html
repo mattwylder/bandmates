@@ -2,7 +2,8 @@
 {{extend 'layout.html'}}
 <html>
     <h2>{{=author.first_name + ' ' + author.last_name}}</h2>
-    <h4>{{=author.email}}</h4>
+    <h4>
+    <a href="mailto:{{=author.email}}">{{=author.email}}</a></h4>
     <br>
     {{if genres:}}
 	<b>Genres:</b>
