@@ -117,11 +117,11 @@ db.define_table('audition',
 
 ## Genres of music 
 db.define_table('genre',
-		Field('genre_name'))
+		Field('genre_name', unique = True))
 
 ## Role of a user e.g. guitarist, drummer, bassist
 db.define_table('role',
-		Field('role_name'))
+		Field('role_name', unique = True))
 
 ## Maps listing to roles
 db.define_table('listing_role',
@@ -152,8 +152,6 @@ db.define_table('audition_role',
 		Field('audition_ndx','reference audition'),
 		Field('role_ndx','reference role'))
 
-db.define_table('city',
-		Field('city_name'))
 import os
 ##For some reason <audio> won't play mp3s unless they're in the static folder
 db.define_table('audio_file',
